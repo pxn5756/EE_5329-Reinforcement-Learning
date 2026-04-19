@@ -17,6 +17,30 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecMonitor
 
+class QValueCallback(BaseCallback):
+    def __init__(self, verbose=0):
+        super().__init__(verbose)
+        self.q_values = []
+
+    def _on_step(self) -> bool:
+        # Only check every 1000 steps to avoid slowing training
+        if self.n_calls % 1000 == 0:
+            # Sample a batch from the replay buffer
+            if self.model.replay_buffer.size() > 0:
+                batch = self.model.replay_buffer.sample(256)
+                
+                # Get Q-value estimates from both critics
+                q1, q2 = self.model.critic(
+                    batch.observations, 
+                    batch.actions
+                )
+                
+                mean_q = (q1.mean().item() + q2.mean().item()) / 2
+                self.q_values.append(mean_q)
+                print(f"Step {self.n_calls}: Mean Q-value = {mean_q:.2f}")
+        
+        return True
+    
 class SaveOnBestTrainingRewardCallback(BaseCallback):
     """
     Callback for saving a model (the check is done every ``check_freq`` steps)
@@ -65,22 +89,23 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
         return True
     
 
-def train(model, name="baseline", log_dir="model/baseline"):
+def train(model, name="baseline", log_dir="model/baseline", time_steps=100000):
     
     start_wall = time.perf_counter()
 
     # Create the callback: check every 1000 steps
-    callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir, exp_name=name)
+    eval_callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir, exp_name=name)
+    q_callback = QValueCallback()
+    callback = [eval_callback, q_callback]
 
     # Train the agent
-    model.learn(total_timesteps=int(100000), callback=callback)
+    model.learn(total_timesteps=int(time_steps), callback=callback)
 
     end_wall = time.perf_counter()
     print(f"Training time: {end_wall - start_wall:.2f} seconds")
     model.save(log_dir + "/" + name + "_model")
 
     shutil.rmtree(log_dir + "/" + name + "_model")
-
 
     results = load_results(log_dir)
     x, y = ts2xy(results, "timesteps")
@@ -95,9 +120,18 @@ def train(model, name="baseline", log_dir="model/baseline"):
     fig_name = log_dir + "/learning_curve.png"
     plt.savefig(fig_name, dpi=300, bbox_inches="tight")
 
+    fig = plt.figure('Q-values')
+    plt.plot(q_callback.q_values)
+    plt.xlabel("Checks (every 1000 steps)")
+    plt.ylabel("Mean Q-value")
+    plt.title("Q-value estimates during training")
+    plt.show()
+
 def main():
     seed = 42
-    experiment_name = "experiment1"
+
+    # CHANGE THIS NAME TO MATCH THE EXPERIMENT
+    experiment_name = "experiment4"
 
     # Create and wrap the environment
     env = gym.make("LunarLanderContinuous-v3")
@@ -106,18 +140,35 @@ def main():
     os.makedirs(log_dir, exist_ok=True)
     env = Monitor(env, log_dir + "/train_monitor.csv")
 
-    # Create action noise because TD3 and DDPG use a deterministic policy
+    # Create action noise because TD3 use a deterministic policy
     n_actions = env.action_space.shape[-1]
     action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
 
     # Run baseline experiment
     # model = TD3('MlpPolicy', env, action_noise=action_noise, verbose=0, seed=seed, device="auto")
-    # train(model, name=experiment_name, log_dir=log_dir)
 
     # Experiment 1: Increase gradient steps
+    # model= TD3('MlpPolicy', env, action_noise=action_noise, verbose=0, seed=seed, device="auto",
+    #         gradient_steps=3)
+    
+    # train(model, name=experiment_name, log_dir=log_dir)
+
+    # Experiment 2: Brute Force: Increase training time
+    # model= TD3('MlpPolicy', env, action_noise=action_noise, verbose=0, seed=seed, device="auto",
+    #     gradient_steps=3)
+    # train(model, name=experiment_name, log_dir=log_dir, time_steps=1000000)
+
+    # Experiment 3: Decrease  Buffer Size
+    # model= TD3('MlpPolicy', env, action_noise=action_noise, verbose=0, seed=seed, device="auto",
+    #         gradient_steps=3,
+    #         buffer_size=125_000)
+    # train(model, name=experiment_name, log_dir=log_dir, time_steps=500_000)
+
+    # Experiment 4: Decrease Buffer Size even
     model= TD3('MlpPolicy', env, action_noise=action_noise, verbose=0, seed=seed, device="auto",
-            gradient_steps=3)
-    train(model, name=experiment_name, log_dir=log_dir)
+            gradient_steps=3,
+            buffer_size=50_000)
+    train(model, name=experiment_name, log_dir=log_dir, time_steps=500_000)
 
 
 if __name__ == "__main__":

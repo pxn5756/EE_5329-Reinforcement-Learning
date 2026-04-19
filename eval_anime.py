@@ -21,6 +21,11 @@ import shutil
 
 def main():
 
+    # Initialise the environment
+    eval_env = gym.make("LunarLanderContinuous-v3", render_mode="human")
+    # Reset the environment to generate the first observation
+    observation, info = eval_env.reset(seed=1)
+    
     # Open file dialog to select model
     root = tk.Tk()
     root.withdraw()  # hides the empty tkinter window
@@ -43,11 +48,9 @@ def main():
     log_dir = head
     os.makedirs(log_dir + "/eval", exist_ok=True)
 
-    # Initialise the environment
-    eval_env = gym.make("LunarLanderContinuous-v3", render_mode="human")
 
-    # Reset the environment to generate the first observation
-    observation, info = eval_env.reset(seed=42)
+
+
 
     # Evaluate the trained agent
     mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10, deterministic=True)

@@ -4,9 +4,9 @@
 
 ## Requirements:
 
-Python: Between Python 3.11 and 3.13
-Gymnasium: V1.2.3
-Stable Baselines 3: 2.8.0
+Python: Between Python 3.11 and 3.13  
+Gymnasium: V1.2.3  
+Stable Baselines 3: 2.8.0  
 
 ## Installation Instructions:
 
@@ -22,6 +22,8 @@ Stable Baselines 3: 2.8.0
 # Training, Evaluation and Comparison:
 
 ## Training:
+
+Command: python train.py
 
 Training is executed by running the train.py file.
 You may edit this file as needed to modify the model hyperparameters
@@ -50,7 +52,7 @@ Note: A seed of 1 is used for evaluation.
 
 The eval.py file allows for a model to be evaluated over 100 episodes.
 The reward evaluation curve, mean rewards, and standard deviation will
-be plotted and saved.
+be plotted and saved to the respective model folder.
 
 ### eval_anime.py
 

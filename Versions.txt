@@ -1,3 +1,6 @@
-Baseline
-V1 Gradient_step = 3, 1396s time
-V3 - 4 environments
+V1.0 - Baseline
+V2.0 - Gradient Steps updated to 3
+V3.0 - Time steps increased to 1,000,000
+V4.0 - Buffer Size decreased to 125,000
+V5.0 - Buffer Size decreased to 50,000
+V6.X - Learning Starts and Dynamic Learning Rate

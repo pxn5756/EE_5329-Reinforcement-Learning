@@ -48,7 +48,7 @@ def main():
     eval_env = Monitor(eval_env, log_dir  + "/eval/eval_monitor.csv")
     
     # Reset the environment to generate the first observation
-    observation, info = eval_env.reset(seed=42)
+    observation, info = eval_env.reset(seed=1)
 
     # Evaluate the trained agent
     mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=100, deterministic=True)
@@ -65,7 +65,7 @@ def main():
     plt.title("Evaluation Curve")
 
     plt.axhline(y=mean_reward, color='red', linestyle='--', 
-                label=f"Mean Reward ({mean_reward:.2f})")
+                label=f"Reward: (mean: {mean_reward:.2f}, std: {std_reward:.2f})")
     plt.legend()
     plt.savefig(log_dir + "/eval_curve.png", dpi=300, bbox_inches="tight")
 
