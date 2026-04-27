@@ -30,20 +30,20 @@ NOTE:
    
 # Folder Structure:
 
-All artifacts including the trained model and metrics
-from evaluation and training are stored in the "model" folder.
+    All artifacts including the trained model and metrics
+    from evaluation and training are stored in the "model" folder.
 
-Example: "model/experiment1"
+    Example: "model/experiment1"
 
-This will contain subdirectories corresponding to the appropriate experiment.
-The baseline mode is also provided here in the "model/baseline" folder.
-Inside the respective "experiment#" folder are any logs and plots of
-training/evaluation curves. The trained model for the experiment will
-have the same name (i.e. "experiment1_model.zip" for example).
-User recordings of the trained agent are also stored in this same folder.
-The secondary eval folder contains the evaluation logs. This is kept here
-as the SB3 load function selects the first "*monitor.csv" file it finds
-and thus would confict with the "train_monitor.csv" log.
+    This will contain subdirectories corresponding to the appropriate experiment.
+    The baseline mode is also provided here in the "model/baseline" folder.
+    Inside the respective "experiment#" folder are any logs and plots of
+    training/evaluation curves. The trained model for the experiment will
+    have the same name (i.e. "experiment1_model.zip" for example).
+    User recordings of the trained agent are also stored in this same folder.
+    The secondary eval folder contains the evaluation logs. This is kept here
+    as the SB3 load function selects the first "*monitor.csv" file it finds
+    and thus would confict with the "train_monitor.csv" log.
 
 # Training, Evaluation and Comparison:
 
@@ -82,14 +82,14 @@ Prior to training starting, the data from the demonstration is loaded into the r
 buffer.
 
 #### KEYS:
-Main Booster:
-    - 'Up Arrow' = 100% Thrust
-    - 'W' = 50% Thrust
-    - 'E' = 10% Thrust
+Main Booster:  
+    - 'Up Arrow' = 100% Thrust  
+    - 'W' = 50% Thrust  
+    - 'E' = 10% Thrust  
     
-Side Boosters:
-    - 'Left' or 'A'= Left Thrust 50%
-    ' 'Right' Arrow  or 'D' = Right Thrust 50%
+Side Boosters:  
+    - 'Left' or 'A'= Left Thrust 50%  
+    - 'Right' Arrow  or 'D' = Right Thrust 50  
 
 ### load_results.py
 
