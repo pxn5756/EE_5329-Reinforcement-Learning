@@ -4,3 +4,4 @@ V3.0 - Time steps increased to 1,000,000
 V4.0 - Buffer Size decreased to 125,000
 V5.0 - Buffer Size decreased to 50,000
 V6.X - Learning Starts and Dynamic Learning Rate
+V7.X - Expert Demo
